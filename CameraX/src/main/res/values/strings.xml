@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">CameraX</string>
+
+    <string name="advice">Advice</string>
+    <string name="permissions_advice_content">For taking a picture, saving it and making a preview you must granted this permissions. Sorry!</string>
+    <string name="ok">Ok</string>
+
 </resources>
