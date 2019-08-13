@@ -1,6 +1,5 @@
 package com.sampa.com.camerax.library;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,10 +10,23 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
-import com.sampa.camerax.CameraXActivity;
+import com.sampa.camerax.CameraXLibrary;
 import com.sampa.com.camerax.library.databinding.FragmentMainBinding;
 
+import java.io.File;
+import java.util.Objects;
+
 public class MainFragment extends Fragment {
+	
+	private CameraXLibrary cameraXLibrary;
+	
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		cameraXLibrary = new CameraXLibrary.Builder(Objects.requireNonNull(getContext()), this)
+				.build();
+	}
 	
 	@Nullable
 	@Override
@@ -27,8 +39,20 @@ public class MainFragment extends Fragment {
 		FragmentMainBinding binding = DataBindingUtil.getBinding(view);
 		
 		if (binding != null) {
-			binding.btnTakePicture.setOnClickListener(v -> startActivity(new Intent(getContext(), CameraXActivity.class)));
+			binding.btnTakePicture.setOnClickListener(v -> {
+				cameraXLibrary.launch();
+			});
 		}
+	}
+	
+	@Override
+	public void onSuccess(File file) {
+		System.out.println();
+	}
+	
+	@Override
+	public void onFailure(Throwable throwable) {
+		System.out.println();
 	}
 	
 }

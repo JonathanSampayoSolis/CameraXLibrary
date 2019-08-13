@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <data>
+        <variable
+            name="presenter"
+            type="com.sampa.camerax.arch.ICameraPresenter" />
+    </data>
+
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -37,6 +43,7 @@
         android:backgroundTint="@android:color/white"
         android:alpha=".5"
         android:src="@drawable/ic_camera_black"
+        android:onClick="@{v -> presenter.onTakePicturePressed()}"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toEndOf="@id/fab_flash"
         app:layout_constraintEnd_toStartOf="@id/fab_change_camera"

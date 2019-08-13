@@ -22,13 +22,17 @@ import androidx.camera.core.PreviewConfig;
 import androidx.fragment.app.Fragment;
 
 import com.sampa.camerax.R;
+import com.sampa.camerax.arch.ICameraView;
 import com.sampa.camerax.databinding.FragmentCameraBinding;
+import com.sampa.camerax.ui.CameraXActivity;
+import com.sampa.camerax.util.CameraXContract;
 import com.sampa.camerax.util.PermissionsHelper;
 
+import java.io.File;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class CameraFragment extends Fragment implements PermissionsHelper.PermissionsHelperCallback {
+public class CameraFragment extends Fragment implements PermissionsHelper.PermissionsHelperCallback, ICameraView {
 	
 	private static final String[] PERMISSIONS = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
 	
@@ -44,12 +48,21 @@ public class CameraFragment extends Fragment implements PermissionsHelper.Permis
 	
 	private AtomicBoolean isLenBackActive;
 	
+	private CameraPresenter presenter;
+	
+	private CameraXContract cameraXListener;
+	
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		presenter = new CameraPresenter(this);
+		
 		permissionsHelper = new PermissionsHelper(this, PERMISSION_CODE, PERMISSIONS, this);
 		isLenBackActive = new AtomicBoolean(true);
+		
+		if (getArguments() != null)
+			cameraXListener = getArguments().getParcelable(CameraXActivity.EXTRA_CAMERAX_CONTRACT);
 	}
 	
 	@Nullable
@@ -60,6 +73,7 @@ public class CameraFragment extends Fragment implements PermissionsHelper.Permis
 	
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		binding.setPresenter(presenter);
 		permissionsHelper.resolvePermissions();
 		
 		binding.fabFlash.setOnClickListener(v -> {
@@ -90,6 +104,33 @@ public class CameraFragment extends Fragment implements PermissionsHelper.Permis
 	@Override
 	public void onPermissionsGranted() {
 		binding.textureView.post(this::startCamera);
+	}
+	
+	@Override
+	public void takePicture() {
+		try {
+			
+			if (getArguments() != null) {
+				String tempPath = getArguments().getString(CameraXActivity.EXTRA_TEMP_PATH);
+				
+				if (presenter.validatePath(tempPath)) {
+					imageCapture.takePicture(new File(
+							tempPath +
+									getArguments().getString(CameraXActivity.EXTRA_PHOTO_NAME) +
+									getArguments().getString(CameraXActivity.EXTRA_PHOTO_FORMAT)
+					), createTakePictureListener());
+				} else {
+					cameraXListener.capture(null, new IllegalAccessError("Can't create temp folder"));
+				}
+				
+			} else {
+				cameraXListener.capture(null, new NoSuchFieldError("Arguments can't be read"));
+			}
+			
+		} catch (Exception e) {
+			cameraXListener.capture(null, e);
+		}
+		
 	}
 	
 	// region: REFERENCE METHODS
@@ -179,6 +220,20 @@ public class CameraFragment extends Fragment implements PermissionsHelper.Permis
 		matrix.postRotate(-rotationDegrees, centerX, centerY);
 		
 		binding.textureView.setTransform(matrix);
+	}
+	
+	private ImageCapture.OnImageSavedListener createTakePictureListener() {
+		return new ImageCapture.OnImageSavedListener() {
+			@Override
+			public void onImageSaved(@NonNull File file) {
+				cameraXListener.capture(file, null);
+			}
+			
+			@Override
+			public void onError(@NonNull ImageCapture.UseCaseError useCaseError, @NonNull String message, @Nullable Throwable cause) {
+				cameraXListener.capture(null, new Exception(message, cause));
+			}
+		};
 	}
 	
 	// endregion
