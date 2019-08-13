@@ -56,17 +56,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/fab_take"/>
 
-    <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
-        android:layout_width="wrap_content"
-        android:layout_height="250dp"
-        android:layout_marginStart="24dp"
-        android:shadowColor="@android:color/white"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-    </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
