@@ -2,10 +2,7 @@ package com.sampa.camerax.ui.camera;
 
 import android.Manifest;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.PorterDuff;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Rational;
@@ -14,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -49,7 +45,7 @@ public class CameraFragment extends Fragment implements PermissionsHelper.Permis
     private PermissionsHelper permissionsHelper;
 
     private AtomicBoolean isLenBackActive;
-
+    
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,24 +63,21 @@ public class CameraFragment extends Fragment implements PermissionsHelper.Permis
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         permissionsHelper.resolvePermissions();
-
-        binding.seekBarZoom.getProgressDrawable().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
-        binding.seekBarZoom.getThumb().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
-
+        
         binding.fabFlash.setOnClickListener(v -> {
             preview.enableTorch(!preview.isTorchOn());
             binding.fabFlash.setImageResource(preview.isTorchOn() ?
                     R.drawable.ic_flash_off_white : R.drawable.ic_flash_on_white);
         });
-
+		
         binding.fabChangeCamera.setOnClickListener(v -> {
             if (CameraX.isBound(preview)) CameraX.unbind(preview);
-
+			
             CameraX.bindToLifecycle(getViewLifecycleOwner(), createPreview(isLenBackActive.getAndSet(!isLenBackActive.get()) ?
                     CameraX.LensFacing.FRONT :
                     CameraX.LensFacing.BACK));
         });
-
+    
     }
 
     @Override
