@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.camera.core.CameraX;
+import androidx.camera.core.FlashMode;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageAnalysisConfig;
 import androidx.camera.core.ImageCapture;
@@ -23,6 +24,7 @@ import androidx.camera.core.Preview;
 import androidx.camera.core.PreviewConfig;
 import androidx.fragment.app.Fragment;
 
+import com.sampa.camerax.R;
 import com.sampa.camerax.databinding.FragmentCameraBinding;
 import com.sampa.camerax.util.PermissionsHelper;
 
@@ -37,6 +39,8 @@ public class CameraFragment extends Fragment implements PermissionsHelper.Permis
 	private FragmentCameraBinding binding;
 	
 	private ImageCapture imageCapture;
+
+	private Preview preview;
 	
 	private PermissionsHelper permissionsHelper;
 	
@@ -55,6 +59,11 @@ public class CameraFragment extends Fragment implements PermissionsHelper.Permis
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		permissionsHelper.resolvePermissions();
+
+		binding.fabFlash.setOnClickListener(v -> {
+            preview.enableTorch(!preview.isTorchOn());
+            binding.fabFlash.setImageResource(preview.isTorchOn() ? R.drawable.ic_flash_off_white : R.drawable.ic_flash_on_white);
+		});
 	}
 	
 	@Override
@@ -81,7 +90,7 @@ public class CameraFragment extends Fragment implements PermissionsHelper.Permis
 	private void startCamera() {
 		binding.textureView.addOnLayoutChangeListener((view, i, i1, i2, i3, i4, i5, i6, i7) -> updateTransform());
 		
-		CameraX.bindToLifecycle(getViewLifecycleOwner(), createPreview(), createImageAnalysis(), (imageCapture = createImageCapture()));
+		CameraX.bindToLifecycle(getViewLifecycleOwner(), (preview = createPreview()), createImageAnalysis(), (imageCapture = createImageCapture()));
 	}
 	
 	// endregion
@@ -95,7 +104,8 @@ public class CameraFragment extends Fragment implements PermissionsHelper.Permis
 		Rational rational = new Rational(displayMetrics.widthPixels, displayMetrics.heightPixels);
 		
 		Preview preview = new Preview(
-				new PreviewConfig.Builder().setLensFacing(CameraX.LensFacing.BACK)
+				new PreviewConfig.Builder()
+						.setLensFacing(CameraX.LensFacing.BACK)
 						.setTargetResolution(size)
 						.setTargetAspectRatio(rational)
 						.setTargetRotation(binding.textureView.getDisplay().getRotation())
