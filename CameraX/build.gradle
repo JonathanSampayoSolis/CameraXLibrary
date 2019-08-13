@@ -55,4 +55,7 @@ dependencies {
     implementation "androidx.camera:camera-core:1.0.0-alpha04"
     implementation "androidx.camera:camera-camera2:1.0.0-alpha04"
 
+    // Vertical seek bar
+    implementation 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:1.0.0'
+
 }
