@@ -4,7 +4,6 @@ package com.sampa.camerax;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -16,8 +15,8 @@ import com.sampa.camerax.util.CameraXContract;
 import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.UUID;
 
+@SuppressWarnings("unused")
 public class CameraXLibrary implements CameraXContract {
 	
 	private String storagePath;
@@ -93,6 +92,20 @@ public class CameraXLibrary implements CameraXContract {
 		context.startActivity(intent);
 	}
 	
+	public void launch(CameraXListener _cameraXListener, LaunchConfig launchConfig) {
+		cameraXListener = _cameraXListener;
+		Intent intent = new Intent(context, CameraXActivity.class);
+		
+		intent.putExtra(CameraXActivity.EXTRA_STORAGE_PATH, launchConfig.getStoragePath());
+		intent.putExtra(CameraXActivity.EXTRA_TEMP_PATH, launchConfig.getTempPath());
+		intent.putExtra(CameraXActivity.EXTRA_PHOTO_NAME, launchConfig.getPhotoName());
+		intent.putExtra(CameraXActivity.EXTRA_PHOTO_FORMAT, launchConfig.getPhotoFormat());
+		
+		intent.putExtra(CameraXActivity.EXTRA_CAMERAX_CONTRACT, this);
+		
+		context.startActivity(intent);
+	}
+	
 	@Override
 	public void capture(Activity activity, File file, Throwable throwable) {
 		if (file == null) {
@@ -113,58 +126,42 @@ public class CameraXLibrary implements CameraXContract {
 	@Override
 	public void writeToParcel(Parcel parcel, int i) { }
 	
-	public static class Builder {
-		
-		private String storagePath;
-		
-		private String tempPath;
-		
-		private String photoName;
-		
-		@Formats
-		private String photoFormat;
-		
-		private Context context;
+	public static class Builder extends CameraXConfig<Builder> {
 		
 		public Builder(Context context) {
-			File picturesDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-			File tempDir = context.getExternalCacheDir();
-			
-			if (picturesDir == null)
-				throw new NullPointerException("Storage path can't be accessible");
-			
-			if (tempDir == null)
-				throw new NullPointerException("Temporal path can't be accessible");
-			
-			this.context = context;
-			this.storagePath = picturesDir.getAbsolutePath() + "/CameraX/";
-			this.tempPath = tempDir.getAbsolutePath() + "/temp_CameraX/";
-			this.photoFormat = Formats.JPG;
-			this.photoName = UUID.randomUUID().toString().toUpperCase();
+			super(context);
 		}
 		
-		public Builder setStoragePath(String storagePath) {
-			this.storagePath = storagePath;
-			return this;
-		}
-		
-		public Builder setTempPath(String tempPath) {
-			this.tempPath = tempPath;
-			return this;
-		}
-		
-		public Builder setPhotoName(String photoName) {
-			this.photoName = photoName;
-			return this;
-		}
-		
-		public Builder setPhotoFormat(@Formats String photoFormat) {
-			this.photoFormat = photoFormat;
-			return this;
+		private Context getContext() {
+			return super.context;
 		}
 		
 		public CameraXLibrary build() {
 			return new CameraXLibrary(this);
+		}
+		
+	}
+	
+	public static class LaunchConfig extends CameraXConfig<LaunchConfig> {
+		
+		public LaunchConfig(Context context) {
+			super(context);
+		}
+		
+		private String getStoragePath() {
+			return super.storagePath;
+		}
+		
+		private String getTempPath() {
+			return super.tempPath;
+		}
+		
+		private String getPhotoName() {
+			return super.photoName;
+		}
+		
+		private String getPhotoFormat() {
+			return super.photoFormat;
 		}
 		
 	}
