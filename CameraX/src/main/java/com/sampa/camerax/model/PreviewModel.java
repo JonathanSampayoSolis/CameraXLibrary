@@ -16,7 +16,7 @@ public class PreviewModel implements IPreviewModel {
 		
 		if (!finalFileDir.exists())
 			if (!finalFileDir.mkdirs()) {
-				callback.onMovePhotoFailure(new IllegalAccessError("No se pudo crear la carpeta pública. Verifica los permisios."));
+				callback.onMovePhotoFailure(new IllegalAccessError("Public directory could't be created. Check permissions."));
 				return;
 			}
 		
@@ -26,7 +26,7 @@ public class PreviewModel implements IPreviewModel {
 			callback.onMovePhotoSuccess(filePhoto);
 		else
 			callback.onMovePhotoFailure(new MissingResourceException(
-					"No se ha podido encontrar el archivo temporal",
+					"Temp photo not found. Try it again.",
 					"File.class",
 					PreviewFragment.class.getSimpleName())
 			);
