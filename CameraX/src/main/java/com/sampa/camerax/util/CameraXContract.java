@@ -1,11 +1,12 @@
 package com.sampa.camerax.util;
 
+import android.app.Activity;
 import android.os.Parcelable;
 
 import java.io.File;
 
-public interface CameraXContract {
+public interface CameraXContract extends Parcelable {
 	
-	void capture(File file, Throwable throwable);
+	void capture(Activity activity, File file, Throwable throwable);
 	
 }

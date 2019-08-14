@@ -1,6 +1,7 @@
 
 package com.sampa.camerax;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
@@ -17,7 +18,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.UUID;
 
-public class CameraXLibrary implements CameraXContract, Parcelable {
+public class CameraXLibrary implements CameraXContract {
 	
 	private String storagePath;
 	
@@ -50,7 +51,6 @@ public class CameraXLibrary implements CameraXContract, Parcelable {
 		this.tempPath = builder.tempPath;
 		this.photoName = builder.photoName;
 		this.photoFormat = builder.photoFormat;
-		cameraXListener = builder.ICameraXListener;
 	}
 	
 	private CameraXLibrary(Parcel in) { }
@@ -79,7 +79,8 @@ public class CameraXLibrary implements CameraXContract, Parcelable {
 		return context;
 	}
 	
-	public void launch() {
+	public void launch(CameraXListener _cameraXListener) {
+		cameraXListener = _cameraXListener;
 		Intent intent = new Intent(context, CameraXActivity.class);
 		
 		intent.putExtra(CameraXActivity.EXTRA_STORAGE_PATH, this.storagePath);
@@ -93,13 +94,15 @@ public class CameraXLibrary implements CameraXContract, Parcelable {
 	}
 	
 	@Override
-	public void capture(File file, Throwable throwable) {
+	public void capture(Activity activity, File file, Throwable throwable) {
 		if (file == null) {
 			cameraXListener.onFailure(throwable);
+			activity.finish();
 			return;
 		}
 		
 		cameraXListener.onSuccess(file);
+		activity.finish();
 	}
 	
 	@Override
@@ -121,11 +124,9 @@ public class CameraXLibrary implements CameraXContract, Parcelable {
 		@Formats
 		private String photoFormat;
 		
-		private CameraXListener ICameraXListener;
-		
 		private Context context;
 		
-		public Builder(Context context, CameraXListener ICameraXListener) {
+		public Builder(Context context) {
 			File picturesDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 			File tempDir = context.getExternalCacheDir();
 			
@@ -136,7 +137,6 @@ public class CameraXLibrary implements CameraXContract, Parcelable {
 				throw new NullPointerException("Temporal path can't be accessible");
 			
 			this.context = context;
-			this.ICameraXListener = ICameraXListener;
 			this.storagePath = picturesDir.getAbsolutePath() + "/CameraX/";
 			this.tempPath = tempDir.getAbsolutePath() + "/temp_CameraX/";
 			this.photoFormat = Formats.JPG;

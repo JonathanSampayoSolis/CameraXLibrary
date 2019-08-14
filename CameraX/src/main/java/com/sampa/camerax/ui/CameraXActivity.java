@@ -15,7 +15,7 @@ public class CameraXActivity extends AppCompatActivity {
 	
 	public static final String EXTRA_STORAGE_PATH = "EXTRA_STORAGE_PATH";
 	
-	public static final String EXTRA_TEMP_PATH = "EXTRA_STORAGE_PATH";
+	public static final String EXTRA_TEMP_PATH = "EXTRA_TEMP_PATH";
 	
 	public static final String EXTRA_PHOTO_NAME = "EXTRA_PHOTO_NAME";
 	
