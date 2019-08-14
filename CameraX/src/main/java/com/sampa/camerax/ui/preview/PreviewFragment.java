@@ -63,7 +63,7 @@ public class PreviewFragment extends Fragment implements IPreviewView {
     @Override
     public void onPause() {
         super.onPause();
-        presenter.deletePhoto(imgURI);
+        presenter.onLeftView(imgURI);
     }
 
     @Override

@@ -76,7 +76,7 @@
                 android:layout_height="0dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:onClick="@{v -> presenter.movePhoto(file, newDir)}"
+                android:onClick="@{v -> presenter.onSaveClick(file, newDir)}"
                 app:layout_constraintStart_toEndOf="@id/ly_restore"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

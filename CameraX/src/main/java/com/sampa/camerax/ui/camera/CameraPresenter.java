@@ -1,33 +1,24 @@
 package com.sampa.camerax.ui.camera;
 
+import com.sampa.camerax.arch.camera.ICameraModel;
 import com.sampa.camerax.arch.camera.ICameraPresenter;
 import com.sampa.camerax.arch.camera.ICameraView;
+import com.sampa.camerax.model.CameraModel;
 
-import java.io.File;
-
-public class CameraPresenter implements ICameraPresenter {
+public class CameraPresenter implements ICameraPresenter, ICameraModel.ICameraModelCallback {
 	
 	private ICameraView view;
 	
+	private ICameraModel model;
+	
 	CameraPresenter(ICameraView view) {
 		this.view = view;
+		this.model = new CameraModel();
 	}
 	
 	@Override
-	public void validatePath(String path) {
-		File file = new File(path);
-		try {
-			if (!file.exists())
-				if (!file.mkdirs()) {
-					view.showError("No se pudo crear la carpeta temporal");
-					return;
-				}
-
-			view.showProgress(true);
-			view.takePicture();
-		} catch (Exception e) {
-			view.showError(e.getMessage());
-		}
+	public void onCaptureClick(String path) {
+		model.validatePath(path, this);
 	}
 
 	@Override
@@ -38,5 +29,16 @@ public class CameraPresenter implements ICameraPresenter {
 	@Override
 	public void onToggleCameraClick() {
 		view.toggleCamera();
+	}
+	
+	@Override
+	public void onValidatePathSuccess() {
+		view.showProgress(true);
+		view.takePicture();
+	}
+	
+	@Override
+	public void onValidatePathFailure(Throwable throwable) {
+		view.showError(throwable);
 	}
 }

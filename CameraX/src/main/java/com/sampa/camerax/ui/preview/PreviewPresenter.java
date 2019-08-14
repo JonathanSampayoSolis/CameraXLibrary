@@ -1,54 +1,46 @@
 package com.sampa.camerax.ui.preview;
 
+import com.sampa.camerax.arch.preview.IPreviewModel;
 import com.sampa.camerax.arch.preview.IPreviewPresenter;
 import com.sampa.camerax.arch.preview.IPreviewView;
+import com.sampa.camerax.model.PreviewModel;
 
 import java.io.File;
-import java.util.MissingResourceException;
-import java.util.Objects;
 
-public class PreviewPresenter implements IPreviewPresenter {
+public class PreviewPresenter implements IPreviewPresenter, IPreviewModel.IPreviewModelCallback {
 
     private IPreviewView view;
+    
+    private IPreviewModel model;
 
     PreviewPresenter(IPreviewView view) {
         this.view = view;
+        this.model = new PreviewModel();
     }
 
     @Override
     public void onRestoreClick() {
         view.launchCameraView();
     }
+	
+	@Override
+	public void onSaveClick(String tempFile, String newPath) {
+		model.movePhoto(tempFile, newPath, this);
+	}
 
     @Override
-    public void movePhoto(String file, String newDir) {
-        File finalFile = new File(newDir);
-        File finalFileDir = new File(Objects.requireNonNull(finalFile.getParent()));
-
-        if (!finalFileDir.exists())
-            if (!finalFileDir.mkdirs()) {
-                view.showError(new IllegalAccessError("No se pudo crear la carpeta temporal"));
-                return;
-            }
-
-        File mFile = new File(file);
-
-        if (mFile.exists() && mFile.renameTo(finalFile)) {
-            view.finishCamera(mFile);
-        } else {
-            view.showError(new MissingResourceException(
-                    "No se ha podido encontrar el archivo temporal",
-                    "File.class",
-                    PreviewFragment.class.getSimpleName()));
-        }
+    public void onLeftView(String file) {
+    	model.removeTempPhoto(file);
     }
-
-    @Override
-    public void deletePhoto(String file) {
-        File mFile = new File(file);
-        if (mFile.exists())
-            //noinspection ResultOfMethodCallIgnored
-            mFile.delete();
-    }
-
+	
+	@Override
+	public void onMovePhotoSuccess(File photo) {
+		view.finishCamera(photo);
+	}
+	
+	@Override
+	public void onMovePhotoFailure(Throwable t) {
+		view.showError(t);
+	}
+	
 }

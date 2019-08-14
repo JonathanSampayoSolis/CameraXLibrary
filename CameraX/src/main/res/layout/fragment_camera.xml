@@ -49,7 +49,7 @@
         android:backgroundTint="@android:color/white"
         android:alpha=".5"
         android:src="@drawable/ic_camera_black"
-        android:onClick="@{v -> presenter.validatePath(path)}"
+        android:onClick="@{v -> presenter.onCaptureClick(path)}"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toEndOf="@id/fab_flash"
         app:layout_constraintEnd_toStartOf="@id/fab_change_camera"

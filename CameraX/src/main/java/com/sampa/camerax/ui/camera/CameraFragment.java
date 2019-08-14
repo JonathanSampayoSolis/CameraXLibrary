@@ -77,14 +77,15 @@ public class CameraFragment extends Fragment implements PermissionsHelper.Permis
             fileName = getArguments().getString(CameraXActivity.EXTRA_PHOTO_NAME);
             fileFormat = getArguments().getString(CameraXActivity.EXTRA_PHOTO_FORMAT);
         }
+        
     }
-
+	
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return (binding = FragmentCameraBinding.inflate(inflater, container, false)).getRoot();
     }
-
+	
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         binding.setPresenter(presenter);
@@ -92,7 +93,7 @@ public class CameraFragment extends Fragment implements PermissionsHelper.Permis
 
         permissionsHelper.resolvePermissions();
     }
-
+	
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -115,7 +116,6 @@ public class CameraFragment extends Fragment implements PermissionsHelper.Permis
     @Override
     public void takePicture() {
         preview.removePreviewOutputListener();
-        showProgress(true);
 
         Executors.newSingleThreadExecutor().execute(() ->
                 imageCapture.takePicture(new File(tempPath + fileName + fileFormat), createTakePictureListener()));
@@ -139,8 +139,8 @@ public class CameraFragment extends Fragment implements PermissionsHelper.Permis
     }
 
     @Override
-    public void showError(String error) {
-        cameraXListener.capture(getActivity(), null, new IllegalAccessError(error));
+    public void showError(Throwable error) {
+        cameraXListener.capture(getActivity(), null, error);
     }
 
     // region:: REFERENCE METHODS
