@@ -158,8 +158,9 @@ public class CameraXLibrary implements CameraXContract {
 			return this;
 		}
 		
-		public void setPhotoFormat(@Formats String photoFormat) {
+		public Builder setPhotoFormat(@Formats String photoFormat) {
 			this.photoFormat = photoFormat;
+			return this;
 		}
 		
 		public CameraXLibrary build() {
