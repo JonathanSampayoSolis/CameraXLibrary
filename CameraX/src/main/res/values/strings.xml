@@ -3,6 +3,10 @@
 
     <string name="advice">Advice</string>
     <string name="permissions_advice_content">For taking a picture, saving it and making a preview you must granted this permissions. Sorry!</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
+    <string name="none">none</string>
+    <string name="volver_a_tomar">Volver a tomar</string>
+    <string name="guardar">Guardar</string>
+    <string name="procesando">Procesando…</string>
 
 </resources>
